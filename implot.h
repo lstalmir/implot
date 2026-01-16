@@ -142,6 +142,7 @@ enum ImPlotFlags_ {
     ImPlotFlags_NoFrame       = 1 << 6,  // the ImGui frame will not be rendered
     ImPlotFlags_Equal         = 1 << 7,  // x and y axes pairs will be constrained to have the same units/pixel
     ImPlotFlags_Crosshairs    = 1 << 8,  // the default mouse cursor will be replaced with a crosshair when hovered
+    ImPlotFlags_TitleInside   = 1 << 9,  // the plot title will be rendered inside the plot area
     ImPlotFlags_CanvasOnly    = ImPlotFlags_NoTitle | ImPlotFlags_NoLegend | ImPlotFlags_NoMenus | ImPlotFlags_NoBoxSelect | ImPlotFlags_NoMouseText
 };
 

@@ -1570,6 +1570,8 @@ void ShowPlotContextMenu(ImPlotPlot& plot) {
         BeginDisabledControls(plot.TitleOffset == -1);
         if (ImGui::MenuItem("Title",nullptr,plot.HasTitle()))
             ImFlipFlag(plot.Flags, ImPlotFlags_NoTitle);
+        if (ImGui::MenuItem("Title Inside",nullptr,ImHasFlag(plot.Flags, ImPlotFlags_TitleInside)))
+            ImFlipFlag(plot.Flags, ImPlotFlags_TitleInside);
         EndDisabledControls(plot.TitleOffset == -1);
         if (ImGui::MenuItem("Mouse Position",nullptr,!ImHasFlag(plot.Flags, ImPlotFlags_NoMouseText)))
             ImFlipFlag(plot.Flags, ImPlotFlags_NoMouseText);
@@ -2559,12 +2561,14 @@ void SetupFinish() {
     float pad_top = 0, pad_bot = 0, pad_left = 0, pad_right = 0;
 
     // (0) calc top padding form title
-    ImVec2 title_size(0.0f, 0.0f);
-    if (plot.HasTitle())
-         title_size = ImGui::CalcTextSize(plot.GetTitle(), nullptr, true);
-    if (title_size.x > 0) {
-        pad_top += title_size.y + gp.Style.LabelPadding.y;
-        plot.AxesRect.Min.y += gp.Style.PlotPadding.y + pad_top;
+    if (!ImHasFlag(plot.Flags, ImPlotFlags_TitleInside)) {
+        ImVec2 title_size(0.0f, 0.0f);
+        if (plot.HasTitle())
+            title_size = ImGui::CalcTextSize(plot.GetTitle(), nullptr, true);
+        if (title_size.x > 0) {
+            pad_top += title_size.y + gp.Style.LabelPadding.y;
+            plot.AxesRect.Min.y += gp.Style.PlotPadding.y + pad_top;
+        }
     }
 
     // (1) calc addition top padding and bot padding
@@ -2809,7 +2813,9 @@ void EndPlot() {
     // render title
     if (plot.HasTitle()) {
         ImU32 col = GetStyleColorU32(ImPlotCol_TitleText);
-        AddTextCentered(&DrawList,ImVec2(plot.PlotRect.GetCenter().x, plot.CanvasRect.Min.y),col,plot.GetTitle());
+        bool ins = ImHasFlag(plot.Flags, ImPlotFlags_TitleInside);
+        const float pad = (ins ? gp.Style.LabelPadding.y : 0.0f);
+        AddTextCentered(&DrawList,ImVec2(plot.PlotRect.GetCenter().x, plot.CanvasRect.Min.y + pad),col,plot.GetTitle());
     }
 
     // render x ticks
